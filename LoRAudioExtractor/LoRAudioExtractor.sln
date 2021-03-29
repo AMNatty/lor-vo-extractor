@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoRAudioExtractor", "LoRAudioExtractor.csproj", "{664476B5-CF6E-4E70-BDF2-7D254B1B3E67}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{664476B5-CF6E-4E70-BDF2-7D254B1B3E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{664476B5-CF6E-4E70-BDF2-7D254B1B3E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{664476B5-CF6E-4E70-BDF2-7D254B1B3E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{664476B5-CF6E-4E70-BDF2-7D254B1B3E67}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

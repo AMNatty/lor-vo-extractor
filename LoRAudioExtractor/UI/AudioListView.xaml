@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="LoRAudioExtractor.UI.AudioListView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:LoRAudioExtractor.UI"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:extractor="clr-namespace:LoRAudioExtractor.Extractor"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      TextElement.FontWeight="Medium"
+      TextElement.FontSize="14"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <materialDesign:ColorZone VerticalAlignment="Center" Padding="12px" Mode="PrimaryMid" >
+            <Label x:Name="ListViewTitle" Content="Currently open file" HorizontalAlignment="Left" />
+        </materialDesign:ColorZone>
+        <DataGrid x:Name="ListViewContainer" Grid.Row="1" Background="#FF343434" IsReadOnly="True">
+            <DataGrid.DataContext>
+                <extractor:ExtractableItem />
+            </DataGrid.DataContext>
+            <DataGrid.Resources>
+                <local:ByteSizeConverter x:Key="ByteSizeConverter" />
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Path=Name}" Header="File name" Width="2*" />
+                <DataGridTextColumn Binding="{Binding Path=InternalName}" Header="Internal file name" Width="2*" />
+                <DataGridTextColumn Binding="{Binding Path=Offset}" Header="Offset" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Binding="{Binding Path=Size, Converter={StaticResource ByteSizeConverter}}" Header="Size" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <materialDesign:ColorZone Grid.Row="2" VerticalAlignment="Center" Padding="3px" Mode="PrimaryDark" FontWeight="Normal" FontSize="12" >
+            <Label x:Name="ListViewStatus" Content="Working..." HorizontalAlignment="Left" />
+        </materialDesign:ColorZone>
+    </Grid>
+</UserControl>
