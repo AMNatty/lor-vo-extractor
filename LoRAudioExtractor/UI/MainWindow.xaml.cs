@@ -239,9 +239,9 @@ namespace LoRAudioExtractor.UI
                         string outPath = Path.Join(targetDir, item.Name);
 
                         if (outPath.EndsWith(".wem"))
-                            outPath = Regex.Replace(outPath, @"\.wem$", ".wav");
+                            outPath = Regex.Replace(outPath, @"\.wem$", ".ogg");
                         else
-                            outPath += ".wav";
+                            outPath += ".ogg";
                         
                         string outDir = Path.GetDirectoryName(outPath)!;
                         Directory.CreateDirectory(outDir);
