@@ -1,0 +1,3 @@
+[submodule "AssetStudio"]
+	path = AssetStudio
+	url = https://github.com/493msi/AssetStudio.git
