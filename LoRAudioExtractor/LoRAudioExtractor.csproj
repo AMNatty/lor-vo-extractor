@@ -17,6 +17,11 @@
         <NeutralLanguage>en-US</NeutralLanguage>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DebugType>none</DebugType>
+      <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+
     <ItemGroup>
       <Compile Remove="License\**" />
       <EmbeddedResource Remove="License\**" />
