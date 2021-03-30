@@ -29,7 +29,7 @@ namespace LoRAudioExtractor.Util
         
         public static void FindSoundEvents(List<string> output, string name, OrderedDictionary input)
         {
-            if (name == "SoundEvent" && input.Contains("Events"))
+            if ((name == "SoundEvent" || name == "SpecifiedSoundEvent") && input.Contains("Events"))
             {
                 object? events = input["Events"];
 
