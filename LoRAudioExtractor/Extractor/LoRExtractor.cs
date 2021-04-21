@@ -17,7 +17,7 @@ namespace LoRAudioExtractor.Extractor
             string liveDir = Path.Join(rootDir, "live");
             string patchableFilesDir = Path.Join(liveDir, "PatcherData", "PatchableFiles");
             string audioDir = Path.Join(patchableFilesDir, "Audio");
-            string cardProfilesDir = Path.Join(patchableFilesDir, "AssetBundles", "assets", "assetlibrary", "cardprofiles");
+            string cardProfilesDir = Path.Join(patchableFilesDir, "AssetBundles");
             
             if (!Directory.Exists(rootDir) || 
                 !Directory.Exists(liveDir) || 
@@ -32,6 +32,9 @@ namespace LoRAudioExtractor.Extractor
 
             string[] assetBundles = DirUtils.RecursivelyList(cardProfilesDir, "*.bbq");
 
+            if (assetBundles.Length == 0)
+                throw new Exception("No AssetBundles found in this directory, please make sure it is a valid LoR directory.");
+            
             AssetsManager assetsManager = new ();
             assetsManager.LoadFiles(assetBundles);
 

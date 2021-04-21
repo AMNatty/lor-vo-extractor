@@ -66,43 +66,51 @@ namespace LoRAudioExtractor.UI
 
         private void LoadItems(string fileName)
         {
-            var entries = LoRExtractor.OpenDirectory(fileName);
-
-            this.Dispatcher.Invoke(() =>
+            try
             {
-                try
-                {
-                    AudioListView audioListView = new ();
-                    audioListView.ListViewTitle.Content = fileName;
+                var entries = LoRExtractor.OpenDirectory(fileName);
 
-                    foreach (var entry in entries)
+                this.Dispatcher.Invoke(() =>
+                {
+                    try
                     {
-                        this._dataContainer = audioListView.ListViewContainer;
-                        
-                        this._dataContainer.Items.Add(entry);
-                        
-                        if (entry?.ArchiveEntry != null)
-                            this.openArchiveFiles.Add(entry.ArchiveEntry.Parent);
+                        AudioListView audioListView = new();
+                        audioListView.ListViewTitle.Content = fileName;
+
+                        foreach (var entry in entries)
+                        {
+                            this._dataContainer = audioListView.ListViewContainer;
+
+                            this._dataContainer.Items.Add(entry);
+
+                            if (entry?.ArchiveEntry != null)
+                                this.openArchiveFiles.Add(entry.ArchiveEntry.Parent);
+                        }
+
+                        int itemCount = entries.Count;
+                        audioListView.ListViewStatus.Content = $"{itemCount} items total";
+
+                        this.MainAppPanel.Children.Clear();
+                        this.MainAppPanel.Children.Add(audioListView);
+
+                        this.ExportMenu.IsEnabled = true;
                     }
-
-                    int itemCount = entries.Count;
-                    audioListView.ListViewStatus.Content = $"{itemCount} items total";
-
-                    this.MainAppPanel.Children.Clear();
-                    this.MainAppPanel.Children.Add(audioListView);
-
-                    this.ExportMenu.IsEnabled = true;
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception);
-                    MessageBox.Show(exception.Message, "Error");
-                }
-                finally
-                {
-                    this.OpenDirMenuOption.IsEnabled = true;
-                }
-            });
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception);
+                        MessageBox.Show(exception.Message, "Error");
+                    }
+                    finally
+                    {
+                        this.OpenDirMenuOption.IsEnabled = true;
+                    }
+                });
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                MessageBox.Show(exception.Message, "Error");
+            }
         }
 
         private void SourceCode_Click(object sender, RoutedEventArgs eventArgs)
