@@ -174,8 +174,11 @@ namespace LoRAudioExtractor.UI
             var selected = this._dataContainer.SelectedItems;
 
             if (selected.Count == 0)
+            {
                 MessageBox.Show(this, "No items are selected.", "Warning", MessageBoxButton.OK, MessageBoxImage.Error);
-            
+                return;
+            }
+                
             this.ExportMenu.IsEnabled = false;
             this.LoadVOMenuOption.IsEnabled = false;
             this.LoadSFXMenuOption.IsEnabled = false;
