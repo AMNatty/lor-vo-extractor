@@ -22,7 +22,10 @@ namespace LoRAudioExtractor.UI
     public partial class MainWindow
     {
         private const string REPO_URL = "http://github.com/493msi/lor-vo-extractor";
-        
+        private const string WW2OGG_URL = "https://github.com/Vextil/Wwise-Unpacker/";
+
+        private bool OfferedWW2OGG { get; set; }
+
         private readonly HashSet<ArchiveFile> openArchiveFiles;
 
         private DataGrid? _dataContainer;
@@ -238,6 +241,8 @@ namespace LoRAudioExtractor.UI
                     });
 
                     int count = -1;
+
+                    bool hadBanks = false;
                     
                     foreach (var selectedItem in items)
                     {                
@@ -262,19 +267,49 @@ namespace LoRAudioExtractor.UI
 
                         if (item.ArchiveEntry == null)
                             continue;
-                        
-                        byte[] data = item.ArchiveEntry.ExtractAndRead();
+
+                        byte[] data = item.ArchiveEntry.ExtractAndRead(out bool isOgg);
                         string outPath = Path.Join(targetDir, item.Name);
 
-                        if (outPath.EndsWith(".wem"))
+                        if (isOgg)
                             outPath = Regex.Replace(outPath, @"\.wem$", ".ogg");
                         else
-                            outPath += ".ogg";
-                        
+                            if (outPath.EndsWith(".wem"))
+                                outPath = Regex.Replace(outPath, @"\.wem$", ".wav");
+
+                        hadBanks |= !isOgg;
+                                
                         string outDir = Path.GetDirectoryName(outPath)!;
                         Directory.CreateDirectory(outDir);
                         File.WriteAllBytes(outPath, data);
                     }
+
+                    if (hadBanks && !this.OfferedWW2OGG)
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            var result = MessageBox.Show(this, "You extracted some files not processable by this extractor.\n" +
+                                                  $"Consider using {WW2OGG_URL} for .WAV and .BNK files.\n" +
+                                                  "Do you want to visit that page?",
+                                "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                            if (result == MessageBoxResult.Yes)
+                            {
+                                try
+                                {
+                                    Process.Start(new ProcessStartInfo
+                                    {
+                                        FileName = WW2OGG_URL,
+                                        UseShellExecute = true
+                                    });
+                                }
+                                catch (Exception)
+                                {
+                                    MessageBox.Show(this, $"See {WW2OGG_URL}.", "Repository URL");
+                                }
+                            }
+
+                            this.OfferedWW2OGG = true;
+                        });
                 }
                 catch (OperationCanceledException)
                 {
