@@ -13,9 +13,9 @@ namespace LoRAudioExtractor.Wwise
 
         public string Name { get; }
         
-        public PckFile64 Parent { get; }
+        public ArchiveFile Parent { get; }
         
-        public ArchiveEntry(PckFile64 parent, ulong id, string name, uint offset, uint size)
+        public ArchiveEntry(ArchiveFile parent, ulong id, string name, uint offset, uint size)
         {
             if (size > int.MaxValue || offset > int.MaxValue)
                 throw new ArgumentException("Size or offset are too big!");
@@ -58,8 +58,8 @@ namespace LoRAudioExtractor.Wwise
 
             bool dataChunk;
 
-            // uint fmtChunkID = 0x666D7D20;
-            uint dataChunkID = 0x64617461;
+            // const uint fmtChunkID = 0x666D7D20;
+            const uint dataChunkID = 0x64617461;
 
             int chunkSize = 0;
             
@@ -74,6 +74,16 @@ namespace LoRAudioExtractor.Wwise
             }
             while (!dataChunk);
             
+            const uint oggMagicNumber = 0x4F676753;
+
+            if (reader.ReadUInt32() != oggMagicNumber)
+            {
+                Console.WriteLine($"File probably not an OGG, will extract the entire RIFF: {this.Name}");
+                reader.BaseStream.Position = this.Offset;
+                
+                return reader.ReadBytes(this.Size);
+            }
+                
             return reader.ReadBytes(chunkSize);
         }
     }

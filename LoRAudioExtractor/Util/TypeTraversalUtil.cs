@@ -6,7 +6,7 @@ namespace LoRAudioExtractor.Util
 {
     public static class TypeTraversalUtil
     {
-        private static void HandleObject(List<string> output, string name, object? input)
+        private static void HandleObject(ICollection<string> output, ICollection<string> banks, string name, object? input)
         {
             switch (input)
             {
@@ -14,28 +14,33 @@ namespace LoRAudioExtractor.Util
                     return;
                 
                 case OrderedDictionary dictionary:
-                    FindSoundEvents(output, name, dictionary);
+                    FindSoundEvents(output, banks, name, dictionary);
                     break;
                 
                 case List<object> list:
-                    FindSoundEvents(output, name, list);
+                    FindSoundEvents(output, banks, name, list);
                     break;
                 
                 case KeyValuePair<object, object> keyValuePair:
-                    HandleObject(output, keyValuePair.Key.ToString() ?? "", keyValuePair.Value);
+                    HandleObject(output, banks, keyValuePair.Key.ToString() ?? "", keyValuePair.Value);
                     break;
             }
         }
         
-        public static void FindSoundEvents(List<string> output, string name, OrderedDictionary input)
+        public static void FindSoundEvents(ICollection<string> output, ICollection<string> banks, string name, OrderedDictionary input)
         {
+            object? bankName = input["BankName"];
+            string? bankNameStr = bankName?.ToString();
+
+            if (bankNameStr != null)
+                banks.Add(bankNameStr);
+            
             if ((name == "SoundEvent" || name == "SpecifiedSoundEvent") && input.Contains("Events"))
             {
                 object? events = input["Events"];
 
                 if (events != null)
                 {
-                    
                     List<object> soundEvents = (List<object>) events;
 
                     foreach (object soundEventObj in soundEvents)
@@ -51,13 +56,13 @@ namespace LoRAudioExtractor.Util
             }
             
             foreach (DictionaryEntry kvp in input)
-                HandleObject(output, kvp.Key.ToString() ?? "", kvp.Value);
+                HandleObject(output, banks, kvp.Key.ToString() ?? "", kvp.Value);
         }
         
-        private static void FindSoundEvents(List<string> output, string name, List<object> input)
+        private static void FindSoundEvents(ICollection<string> output, ICollection<string> banks, string name, List<object> input)
         {
             foreach (var item in input)
-                HandleObject(output, name, item);
+                HandleObject(output, banks, name, item);
         }
     }
 }

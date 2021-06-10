@@ -33,7 +33,22 @@ namespace LoRAudioExtractor.UI
             this.InitializeComponent();
         }
 
-        private void OpenItem_Click(object sender, RoutedEventArgs e)
+        private void LoadVO_Click(object sender, RoutedEventArgs e)
+        {
+            this.Load(LoRExtractor.AudioType.VO);
+        }
+        
+        private void LoadSFX_Click(object sender, RoutedEventArgs e)
+        {
+            this.Load(LoRExtractor.AudioType.SFX);
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void Load(LoRExtractor.AudioType audioType)
         {
             using CommonOpenFileDialog dialog = new () {
                 InitialDirectory = "C:\\Riot Games\\",
@@ -60,21 +75,22 @@ namespace LoRAudioExtractor.UI
             initialBox.ChildContainer.Child = loadingBox;
             this.MainAppPanel.Children.Add(initialBox);
             
-            this.OpenDirMenuOption.IsEnabled = false;
-            Task.Run(() => this.LoadItems(fileName));
+            this.LoadVOMenuOption.IsEnabled = false;
+            this.LoadSFXMenuOption.IsEnabled = false;
+            Task.Run(() => this.LoadItems(fileName, audioType));
         }
 
-        private void LoadItems(string fileName)
+        private void LoadItems(string fileName, LoRExtractor.AudioType audioType)
         {
             try
             {
-                var entries = LoRExtractor.OpenDirectory(fileName);
+                var entries = LoRExtractor.OpenDirectory(fileName, audioType);
 
                 this.Dispatcher.Invoke(() =>
                 {
                     try
                     {
-                        AudioListView audioListView = new();
+                        AudioListView audioListView = new ();
                         audioListView.ListViewTitle.Content = fileName;
 
                         foreach (var entry in entries)
@@ -102,7 +118,8 @@ namespace LoRAudioExtractor.UI
                     }
                     finally
                     {
-                        this.OpenDirMenuOption.IsEnabled = true;
+                        this.LoadVOMenuOption.IsEnabled = true;
+                        this.LoadSFXMenuOption.IsEnabled = true;
                     }
                 });
             }
@@ -157,12 +174,14 @@ namespace LoRAudioExtractor.UI
                 MessageBox.Show(this, "No items are selected.", "Warning", MessageBoxButton.OK, MessageBoxImage.Error);
             
             this.ExportMenu.IsEnabled = false;
-            this.OpenDirMenuOption.IsEnabled = false;
+            this.LoadVOMenuOption.IsEnabled = false;
+            this.LoadSFXMenuOption.IsEnabled = false;
             
             this.ExtractItems(selected);
             
             this.ExportMenu.IsEnabled = true;
-            this.OpenDirMenuOption.IsEnabled = true;
+            this.LoadVOMenuOption.IsEnabled = true;
+            this.LoadSFXMenuOption.IsEnabled = true;
         }
 
         private void ExtractAll_Click(object sender, RoutedEventArgs e)
@@ -214,7 +233,8 @@ namespace LoRAudioExtractor.UI
                     this.Dispatcher.Invoke(() =>
                     {
                         this.ExportMenu.IsEnabled = false;
-                        this.OpenDirMenuOption.IsEnabled = false;
+                        this.LoadVOMenuOption.IsEnabled = false;
+                        this.LoadSFXMenuOption.IsEnabled = false;
                     });
 
                     int count = -1;
@@ -281,7 +301,8 @@ namespace LoRAudioExtractor.UI
                         progressWindow.Closed -= CancelDelegate;
                         progressWindow.Close();
                         this.ExportMenu.IsEnabled = true;
-                        this.OpenDirMenuOption.IsEnabled = true;
+                        this.LoadVOMenuOption.IsEnabled = true;
+                        this.LoadSFXMenuOption.IsEnabled = true;
                     });
                 }
             }, ct);

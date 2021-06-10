@@ -20,9 +20,10 @@
         <DockPanel Grid.Row="0">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open game directory" x:Name="OpenDirMenuOption" Click="OpenItem_Click" />
+                    <MenuItem Header="Load _VO" x:Name="LoadVOMenuOption" Click="LoadVO_Click" />
+                    <MenuItem Header="Load _SFX" x:Name="LoadSFXMenuOption" Click="LoadSFX_Click" />
                     <Separator />
-                    <MenuItem Header="_Exit" />
+                    <MenuItem Header="_Exit" Click="Exit_Click" />
                 </MenuItem>
                 <MenuItem Header="E_xport" x:Name="ExportMenu" IsEnabled="False">
                     <MenuItem Header="Export _all" Click="ExtractAll_Click" />
