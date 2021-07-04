@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
-using MaterialDesignThemes.Wpf.Converters;
+using Concentus.Oggfile;
+using Concentus.Structs;
+using NAudio.Wave;
 
 namespace LoRAudioExtractor.Wwise
 {
@@ -35,9 +37,9 @@ namespace LoRAudioExtractor.Wwise
             return reader.ReadBytes(this.Size);
         }
         
-        public byte[] ExtractAndRead(out bool isOgg)
+        public byte[] ExtractAndRead(out bool isWem)
         {
-            isOgg = false;
+            isWem = false;
             
             try
             {
@@ -81,12 +83,43 @@ namespace LoRAudioExtractor.Wwise
             
                 const uint oggMagicNumber = 0x4F676753;
 
-                if (reader.ReadUInt32() == oggMagicNumber)
+                uint fileMagicNumber = reader.ReadUInt32B();
+
+                if (fileMagicNumber == oggMagicNumber)
                 {
-                    isOgg = true;
-                    return reader.ReadBytes(chunkSize);         
+                    reader.BaseStream.Seek(-sizeof(uint), SeekOrigin.Current);
+
+                    byte[] data = reader.ReadBytes(chunkSize);
+
+                    using MemoryStream inputStream = new (data);
+                    using MemoryStream outputStream = new ();
+                    using MemoryStream wavOutputStream = new ();
+
+                    const int fs = 48000;
+                    const int channels = 2;
+                    
+                    OpusDecoder decoder = new (fs, channels);
+                    OpusOggReadStream oggReadStream = new (decoder, inputStream);
+
+                    while (oggReadStream.HasNextPacket)
+                    {
+                        short[] packet = oggReadStream.DecodeNextPacket();
+
+                        if (packet == null)
+                            continue;
+                            
+                        foreach (short t in packet)
+                            outputStream.Write(BitConverter.GetBytes(t));
+                    }
+                        
+                    outputStream.Seek(0, SeekOrigin.Begin);
+                    var wavStream = new RawSourceWaveStream(outputStream, new WaveFormat(fs, channels));
+                    var waveProvider = wavStream.ToSampleProvider();
+                    WaveFileWriter.WriteWavFileToStream(wavOutputStream, waveProvider.ToWaveProvider16());
+                    return wavOutputStream.ToArray();
                 }
 
+                isWem = true;
                 Console.WriteLine($"File probably not an OGG, will extract the entire RIFF: {this.Name}");
                 reader.BaseStream.Position = this.Offset;
                 

@@ -271,16 +271,16 @@ namespace LoRAudioExtractor.UI
                         if (item.ArchiveEntry == null)
                             continue;
 
-                        byte[] data = item.ArchiveEntry.ExtractAndRead(out bool isOgg);
+                        byte[] data = item.ArchiveEntry.ExtractAndRead(out bool isWem);
                         string outPath = Path.Join(targetDir, item.Name);
 
-                        if (isOgg)
-                            outPath = Regex.Replace(outPath, @"\.wem$", ".ogg");
-                        else
-                            if (outPath.EndsWith(".wem"))
-                                outPath = Regex.Replace(outPath, @"\.wem$", ".wav");
+                        if (!outPath.Contains("."))
+                            outPath += ".wav";
+                            
+                        if (outPath.EndsWith(".wem"))
+                            outPath = Regex.Replace(outPath, @"\.wem$", ".wav");
 
-                        hadBanks |= !isOgg;
+                        hadBanks |= isWem;
                                 
                         string outDir = Path.GetDirectoryName(outPath)!;
                         Directory.CreateDirectory(outDir);
